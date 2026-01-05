@@ -37,8 +37,7 @@ You need **Python 3.x** installed on your system.
 
 1.  **Clone the repository (if applicable):**
     ```bash
-    git clone <your-repository-link>
-    cd ai-nids-dashboard
+    git clone https://github.com/PERSONAL-PROJECTS-2000/AINIDS.git
     ```
 
 2.  **Create and activate a virtual environment (recommended):**
@@ -62,7 +61,7 @@ You need **Python 3.x** installed on your system.
 
 2.  **Run the Streamlit application:**
     ```bash
-    streamlit run app.py
+    streamlit run nmain.py
     ```
     This command will open the dashboard in your default web browser (usually at `http://localhost:8501`).
 
