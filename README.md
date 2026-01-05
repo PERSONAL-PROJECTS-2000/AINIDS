@@ -38,6 +38,7 @@ You need **Python 3.x** installed on your system.
 1.  **Clone the repository (if applicable):**
     ```bash
     git clone https://github.com/PERSONAL-PROJECTS-2000/AINIDS.git
+    cd AINIDS
     ```
 
 2.  **Create and activate a virtual environment (recommended):**
