@@ -8,6 +8,10 @@ This project simulates a Network Intrusion Detection System (NIDS) that leverage
 
 The system uses synthesized network flow features (like `Flow Duration`, `Total Fwd Packets`, `Packet Length Mean`, etc.) to train a classification model. The goal is to provide a clear, interactive interface for training the model, evaluating its performance, and testing its detection capabilities.
 
+## Project Link
+
+[https://pdas-ai-network-intrusion-detection-system.streamlit.app](https://pdas-ai-network-intrusion-detection-system.streamlit.app)
+
 ### 🎯 Key Features
 
 * **Interactive Dashboard:** Built with Streamlit for an easy-to-use interface.
