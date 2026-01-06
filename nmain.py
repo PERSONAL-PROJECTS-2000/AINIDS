@@ -19,32 +19,61 @@ It classifies traffic into two categories:
 * **Malicious (1):** Potential cyberattacks (DDoS, Port Scan, etc.).
 """)
 
+NIDS_FEATURES_ORIGINAL = [
+    ' Destination Port',
+    ' Flow Duration',
+    ' Total Fwd Packets',
+    ' Packet Length Mean',
+    'Active Mean'
+]
+
 @SL.cache_data
-def load_data():
-    nu.random.seed(42)
-    n_samples = 5000
-    data = {
-    'Destination_Port': nu.random.randint(1, 65535, n_samples),
-    'Flow_Duration': nu.random.randint(100, 100000, n_samples),
-    'Total_Fwd_Packets': nu.random.randint(1, 100, n_samples),
-    'Packet_Length_Mean': nu.random.uniform(10, 1500, n_samples),
-    'Active_Mean': nu.random.uniform(0, 1000, n_samples),
-    'Label': nu.random.choice([0, 1], size=n_samples, p=[0.7, 0.3])
-    }
-    df = pa.DataFrame(data)
-    df.loc[df['Label'] == 1, 'Total_Fwd_Packets'] += nu.random.randint(50, 200, size=df[df['Label']==1].shape[0])
-    df.loc[df['Label'] == 1, 'Flow_Duration'] = nu.random.randint(1, 1000, size=df[df['Label']==1].shape[0])
-    return df
+def load_data(mode):
+    if(mode == "Simulation"):
+        nu.random.seed(42)
+        n_samples = 5000
+        data = {
+            'Destination Port': nu.random.randint(1, 65535, n_samples),
+            'Flow Duration': nu.random.randint(100, 100000, n_samples),
+            'Total Fwd Packets': nu.random.randint(1, 100, n_samples),
+            'Packet Length Mean': nu.random.uniform(10, 1500, n_samples),
+            'Active Mean': nu.random.uniform(0, 1000, n_samples),
+            'Label': nu.random.choice([0, 1], size=n_samples, p=[0.7, 0.3])
+        }
+        df = pa.DataFrame(data)
+        df.loc[df['Label'] == 1, 'Total Fwd Packets'] += nu.random.randint(50, 200, size=df[df['Label']==1].shape[0])
+        df.loc[df['Label'] == 1, 'Flow Duration'] = nu.random.randint(1, 1000, size=df[df['Label']==1].shape[0])
+        return df
+    else:
+        try:
+            df = pa.read_csv("Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv")
+            df[' Label'] = df[' Label'].apply(lambda x: 0 if x.strip() == 'BENIGN' else 1)
+            df.replace([nu.inf, -nu.inf], nu.nan, inplace=True)
+            df.dropna(inplace=True)
+            features_and_label = NIDS_FEATURES_ORIGINAL + [' Label']
+            df = df[features_and_label]
+            df.columns = [col.strip() for col in df.columns]
+            df = df.apply(pa.to_numeric, errors='coerce')
+            df.dropna(inplace=True)
+            return df
+        except FileNotFoundError:
+            SL.error("Dataset not found. Please ensure that the dataset is in the app directory.")
+            return pa.DataFrame(columns=NIDS_FEATURES_CLEAN + ['Label'])
         
+NIDS_FEATURES_CLEAN = [col.strip() for col in NIDS_FEATURES_ORIGINAL]
+
 SL.sidebar.header("Control Panel")
-SL.sidebar.info("Adjust the model parameters here.")
+mode = SL.sidebar.selectbox("Select the Mode", ["Simulation", "Real-time"], index=0)
+SL.sidebar.info("Select the mode and adjust the model parameters here.")
 split_size = SL.sidebar.slider("Training Data Size (%)", 50, 90, 80)
 n_estimators = SL.sidebar.slider("Number of Trees (Random Forest)", 10, 200, 100)
 
-df = load_data()
+df = load_data(mode)
 
-X = df.drop('Label', axis=1)
+X = df[NIDS_FEATURES_CLEAN]
 y = df['Label']
+if X.empty:
+    SL.stop()
 X_train, X_test, y_train, y_test = tts(X, y, test_size=(100-split_size)/100, 
 random_state=42)
 
@@ -58,7 +87,7 @@ with SL.container(border=True):
             SL.session_state['model'] = model 
             SL.success("Training Complete!")
     if 'model' in SL.session_state:
-        SL.success("Model is Ready for Testing")
+        SL.success("The Model is now Ready for Testing")
 
 with SL.container(border=True):
     SL.subheader("2. Performance Metrics")
@@ -81,30 +110,35 @@ with SL.container(border=True):
         acm = {'Mean Accuracy Error': [mae, maet], 'Mean Squared Error': [mse, mset]}
         mns = pa.DataFrame(acm, index=['Training Data', 'Test Data'])
         SL.write("#### MEAN ERRORS")
-        SL.dataframe(mns, use_container_width=True)
+        SL.dataframe(mns, width='content')
         SL.divider()
-        SL.write("### CLASSIFICATION REPORTS")
-        SL.write("#### TRAINING DATA:- ")
-        SL.dataframe(CR(y_train, y_pred, output_dict=True))
-        SL.write("#### TEST DATA:- ")
-        SL.dataframe(CR(y_test, y_tpred, output_dict=True))
+        SL.write("#### CLASSIFICATION REPORTS")
+        m6, m7 = SL.columns(2)
+        with m6:
+            SL.write("##### TRAINING DATA:- ")
+            SL.dataframe(CR(y_train, y_pred, output_dict=True), width='content')
+        with m7:
+            SL.write("##### TEST DATA:- ")
+            SL.dataframe(CR(y_test, y_tpred, output_dict=True), width='content')
         SL.divider()
-        SL.write("### CONFUSION MATRICES")
-        SL.write("#### TRAINING DATA:- ")
-        cm = CM(y_train, y_pred)
-        dis=CMD(confusion_matrix=cm, display_labels=['Safe(0)', 'Malicious(1)'])
-        fig, ax = mp.subplots(figsize=(4, 2))
-        dis.plot(ax=ax, cmap='Blues')
-        mp.title("Training Data")
-        SL.pyplot(fig)
-        SL.write("\n\n\n")
-        SL.write("#### TEST DATA:- ")
-        cmt = CM(y_test, y_tpred)
-        dist=CMD(confusion_matrix=cmt, display_labels=['Safe(0)', 'Malicious(1)'])
-        figt, ax = mp.subplots(figsize=(4, 2))
-        dist.plot(ax=ax, cmap='Reds')
-        mp.title("Test Data")
-        SL.pyplot(figt)
+        SL.write("#### CONFUSION MATRICES")
+        m8, m9 = SL.columns(2)
+        with m8:
+            SL.write("##### TRAINING DATA:- ")
+            cm = CM(y_train, y_pred)
+            dis=CMD(confusion_matrix=cm, display_labels=['Safe(0)', 'Malicious(1)'])
+            fig, ax = mp.subplots(figsize=(6, 3))
+            dis.plot(ax=ax, cmap='Blues')
+            mp.title("Training Data")
+            SL.pyplot(fig)
+        with m9:
+            SL.write("##### TEST DATA:- ")
+            cmt = CM(y_test, y_tpred)
+            dist=CMD(confusion_matrix=cmt, display_labels=['Safe(0)', 'Malicious(1)'])
+            figt, ax = mp.subplots(figsize=(6, 3))
+            dist.plot(ax=ax, cmap='Reds')
+            mp.title("Test Data")
+            SL.pyplot(figt)
     else:
         SL.warning("Please train the model first.")
 
@@ -112,15 +146,16 @@ SL.divider()
 with SL.container(border=True):
     SL.subheader("3. Live Traffic Simulator (Test the AI)")
     SL.write("Enter network packet details below to see if the AI flags it as an attack.")
-    c1, c2, c3, c4 = SL.columns(4)
-    p_dur = c1.number_input("Flow Duration (ms)", 0, 100000, 500)
-    p_pkts = c2.number_input("Total Packets", 0, 500, 100)
-    p_len = c3.number_input("Packet Length Mean", 0, 1500, 500)
-    p_active = c4.number_input("Active Mean Time", 0, 1000, 50)
+    c1, c2, c3, c4, c5 = SL.columns(5)
+    p_port = c1.number_input("Destination Port", 1, 65535, 80)
+    p_dur = c2.number_input("Flow Duration (ms)", 0, 100000, 500)
+    p_pkts = c3.number_input("Total Fwd Packets", 0, 500, 100)
+    p_len = c4.number_input("Packet Length Mean", 0, 1500, 500)
+    p_active = c5.number_input("Active Mean Time", 0, 1000, 50)
     if SL.button("Analyze Packet"):
         if 'model' in SL.session_state:
             model = SL.session_state['model']
-            input_data = nu.array([[80, p_dur, p_pkts, p_len, p_active]])
+            input_data = nu.array([[p_port, p_dur, p_pkts, p_len, p_active]])
             pred = model.predict(input_data)
             if pred[0] == 1:
                 SL.error("ALERT: MALICIOUS TRAFFIC DETECTED!")
