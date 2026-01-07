@@ -3,8 +3,7 @@ __pycache__/
 *.pyd
 *.so
 venv/
-.DS_Store # Mac
-Thumbs.db # Windows
+Thumbs.db
 .streamlit/secrets.toml
 Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
 .ipynb_checkpoints
