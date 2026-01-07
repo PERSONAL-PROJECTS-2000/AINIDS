@@ -28,7 +28,7 @@ The system uses synthesized network flow features (like `Flow Duration`, `Total 
 | **Dashboard** | Streamlit | Frontend interface and interactivity. |
 | **Machine Learning** | Scikit-learn (sklearn) | Model training (Random Forest) and performance metrics. |
 | **Data Handling** | Pandas, NumPy | Data generation, manipulation, and feature engineering. |
-| **Visualization** | Matplotlib, Seaborn | Generating confusion matrices and data visualizations. |
+| **Visualization** | Matplotlib | Generating confusion matrices and data visualizations. |
 
 ## 🚀 Getting Started
 
@@ -58,7 +58,7 @@ You need **Python 3.x** installed on your system.
 3.  **Install the required libraries:**
     The project uses the following dependencies:
     ```bash
-    pip install streamlit pandas numpy scikit-learn seaborn matplotlib
+    pip install streamlit pandas numpy scikit-learn matplotlib
     ```
 
 ### Running the Dashboard
