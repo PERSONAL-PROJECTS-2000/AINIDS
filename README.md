@@ -84,6 +84,7 @@ On the left sidebar, you can set the key parameters for the model:
 
 ### 1. Model Training
 
+* Select the **"Mode"**.
 * Click the **"Train Model Now"** button to train the Random Forest model using the current parameters.
 * *Note: Model training must be completed before proceeding to testing and prediction.*
 
