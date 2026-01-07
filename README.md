@@ -107,6 +107,6 @@ This section allows you to manually input network flow features to test the trai
 
 ## 📂 Code Structure Highlights
 
-* **`load_data()`:** Generates a synthetic dataset for demonstration. It ensures malicious (Label=1) data points have characteristic features (e.g., higher `Total_Fwd_Packets`, lower `Flow_Duration`) to make the intrusion detection task feasible for the AI.
+* **`load_data()`:** Generates a synthetic dataset for demonstration or loads the real-time dataset. It ensures malicious (Label=1) data points have characteristic features (e.g., higher `Total_Fwd_Packets`, lower `Flow_Duration`) to make the intrusion detection task feasible for the AI.
 * **`@SL.cache_data`:** Used for the data loading function to prevent re-running the data generation every time the app interacts, ensuring performance efficiency.
 * **Random Forest (`RFC`):** The core algorithm chosen for its balance of high accuracy and interpretability in classification tasks like NIDS.
