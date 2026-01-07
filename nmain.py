@@ -6,7 +6,6 @@ import numpy as nu
 from sklearn.ensemble import RandomForestClassifier as RFC
 from sklearn.model_selection import train_test_split as tts
 from sklearn.metrics import classification_report as CR, confusion_matrix as CM, ConfusionMatrixDisplay as CMD, accuracy_score as acs, mean_absolute_error as MAE, mean_squared_error as MSE
-import seaborn as sb
 import matplotlib.pyplot as mp
 
 SL.set_page_config(page_title="AI NIDS Dashboard", layout="wide")
