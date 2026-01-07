@@ -1,4 +1,6 @@
 import streamlit as SL
+import requests
+import io
 import pandas as pa
 import numpy as nu
 from sklearn.ensemble import RandomForestClassifier as RFC
@@ -27,6 +29,8 @@ NIDS_FEATURES_ORIGINAL = [
     'Active Mean'
 ]
 
+durl = SL.secrets["data_config"]["dataset_url"]
+
 @SL.cache_data
 def load_data(mode):
     if(mode == "Simulation"):
@@ -46,7 +50,10 @@ def load_data(mode):
         return df
     else:
         try:
-            df = pa.read_csv("Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv")
+            SL.info("Downloading the real-time dataset...")
+            download = requests.get(durl)
+            download.raise_for_status()
+            df = pa.read_csv(io.StringIO(download.text), encoding='ISO-8859-1')
             df[' Label'] = df[' Label'].apply(lambda x: 0 if x.strip() == 'BENIGN' else 1)
             df.replace([nu.inf, -nu.inf], nu.nan, inplace=True)
             df.dropna(inplace=True)
@@ -56,9 +63,12 @@ def load_data(mode):
             df = df.apply(pa.to_numeric, errors='coerce')
             df.dropna(inplace=True)
             return df
-        except FileNotFoundError:
-            SL.error("Dataset not found. Please ensure that the dataset is in the app directory.")
-            return pa.DataFrame(columns=NIDS_FEATURES_CLEAN + ['Label'])
+        except requests.exceptions.RequestException as e:
+            SL.error(f"Error downloading dataset. Status code: {e.response.status_code if e.response else 'N/A'}")
+            return pa.DataFrame()
+        except KeyError:
+            SL.error("The required download url was not found.")
+            return pa.DataFrame()
         
 NIDS_FEATURES_CLEAN = [col.strip() for col in NIDS_FEATURES_ORIGINAL]
 
