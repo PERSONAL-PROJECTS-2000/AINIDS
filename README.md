@@ -79,12 +79,13 @@ The application is divided into three main sections:
 
 On the left sidebar, you can set the key parameters for the model:
 
+* **Select the Mode** Decides whether the  Random Forest Classifier will be trained on an instantaneous simulated dataset or the real-time dataset.
 * **Training Data Size (%):** Adjusts the percentage of the simulated dataset used for model training (e.g., 80% for training, 20% for testing).
 * **Number of Trees (Random Forest):** Sets the `n_estimators` hyperparameter for the Random Forest Classifier, controlling the complexity and performance of the model.
 
 ### 1. Model Training
 
-* Select the **"Mode"**.
+* Select the **Mode** *(Simulation/Real-time)* from the dropdown menu in the Control Panel.
 * Click the **"Train Model Now"** button to train the Random Forest model using the current parameters.
 * *Note: Model training must be completed before proceeding to testing and prediction.*
 
