@@ -19,6 +19,7 @@ The system uses synthesized network flow features (like `Flow Duration`, `Total 
 * **Customizable Parameters:** Users can adjust the training split size and the number of estimators (trees) in the Random Forest.
 * **Comprehensive Evaluation:** Displays accuracy, mean errors, classification reports, and **Confusion Matrices** for both training and test data.
 * **Live Traffic Simulation:** An interactive section to input new packet features and get a real-time intrusion prediction from the trained AI model.
+* **Real World NID (DDoS) Dataset:** Option for user to select between **Simulation** and **Real-time** to train the model with the simulated data or the real-world data respectively.
 
 ## 🛠️ Technology Stack
 
