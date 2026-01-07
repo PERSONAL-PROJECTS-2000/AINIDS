@@ -10,7 +10,7 @@ The system uses synthesized network flow features (like `Flow Duration`, `Total 
 
 ## Project Link
 
-[https://pdas-ai-network-intrusion-detection-system.streamlit.app](https://pdas-ai-network-intrusion-detection-system.streamlit.app)
+[https://ainids-pdas.streamlit.app/](https://ainids-pdas.streamlit.app/)
 
 ### 🎯 Key Features
 
