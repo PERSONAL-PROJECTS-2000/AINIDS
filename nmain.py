@@ -50,10 +50,10 @@ def load_data(mode):
         return df
     else:
         try:
-            SL.info("Downloading the real-time dataset...")
-            download = requests.get(durl)
-            download.raise_for_status()
-            df = pa.read_csv(io.StringIO(download.text), encoding='ISO-8859-1')
+            with SL.spinner("Downloading the real-time dataset..."):
+                download = requests.get(durl)
+                download.raise_for_status()
+                df = pa.read_csv(io.StringIO(download.text), encoding='ISO-8859-1')
             df[' Label'] = df[' Label'].apply(lambda x: 0 if x.strip() == 'BENIGN' else 1)
             df.replace([nu.inf, -nu.inf], nu.nan, inplace=True)
             df.dropna(inplace=True)
