@@ -73,8 +73,8 @@ def load_data(mode):
 NIDS_FEATURES_CLEAN = [col.strip() for col in NIDS_FEATURES_ORIGINAL]
 
 SL.sidebar.header("Control Panel")
-mode = SL.sidebar.selectbox("Select the Mode", ["Simulation", "Real-time"], index=0)
 SL.sidebar.info("Select the mode and adjust the model parameters here.")
+mode = SL.sidebar.selectbox("Select the Mode", ["Simulation", "Real-time"], index=0)
 split_size = SL.sidebar.slider("Training Data Size (%)", 50, 90, 80)
 n_estimators = SL.sidebar.slider("Number of Trees (Random Forest)", 10, 200, 100)
 
